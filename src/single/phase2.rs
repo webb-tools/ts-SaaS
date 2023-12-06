@@ -2,7 +2,12 @@
 use ark_ec::pairing::Pairing;
 use ark_ec::Group;
 use ark_ff::{fields::Field, UniformRand, Zero};
-use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Valid, Validate};
+#[allow(unused)]
+use ark_serialize::Valid;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Validate};
+use ark_std::{borrow::ToOwned, vec, vec::Vec};
+
+#[cfg(any(feature = "std", feature = "parallel"))]
 use rand_core::{CryptoRngCore, OsRng};
 
 use crate::single::log::{ContributionHash, Hashable, Phase};
@@ -21,6 +26,7 @@ pub struct RawCRSElements<E: Pairing> {
 
 impl<E: Pairing> RawCRSElements<E> {
     #[must_use]
+    #[cfg(any(feature = "std", feature = "parallel"))]
     pub fn validate<R: CryptoRngCore>(
         self,
         rng: &mut R,
@@ -61,6 +67,7 @@ impl<E: Pairing> RawCRSElements<E> {
     }
 
     /// This is a replacement for the CanonicalDeserialize trait impl (more or less).
+    #[allow(dead_code)]
     #[cfg(not(feature = "parallel"))]
     pub(crate) fn checked_deserialize_parallel(
         compress: Compress,
@@ -148,6 +155,7 @@ impl<E: Pairing> Hashable for CRSElements<E> {
 
 impl<E: Pairing> CRSElements<E> {
     // TODO: Remove this when no longer needed for testing in summonerd
+    #[allow(dead_code)]
     pub(crate) fn dummy_root(degree: usize) -> Self {
         Self {
             raw: RawCRSElements {
@@ -171,6 +179,7 @@ pub struct RawContribution<E: Pairing> {
 impl<E: Pairing> RawContribution<E> {
     /// Check the internal integrity of this contribution, potentially producing
     /// a valid one.
+    #[cfg(any(feature = "std", feature = "parallel"))]
     pub fn validate<R: CryptoRngCore>(
         self,
         rng: &mut R,
@@ -188,6 +197,7 @@ impl<E: Pairing> RawContribution<E> {
     /// Skip validation, and perform a conversion anyways.
     ///
     /// Can be useful when parsing data that's known to be good.
+    #[allow(dead_code)]
     pub(crate) fn assume_valid(self) -> Contribution<E> {
         Contribution {
             parent: self.parent,
@@ -241,6 +251,7 @@ impl<E: Pairing> Contribution<E> {
     /// Make a new contribution, over the previous CRS elements.
     ///
     /// We also need a hash of the parent contribution we're building on.
+    #[cfg(any(feature = "std", feature = "parallel"))]
     pub fn make<R: CryptoRngCore>(
         rng: &mut R,
         parent: ContributionHash,
@@ -253,10 +264,10 @@ impl<E: Pairing> Contribution<E> {
         let mut new = old.clone();
         new.raw.delta_1 *= delta;
         new.raw.delta_2 *= delta;
-        for mut v in &mut new.raw.inv_delta_p_1 {
+        for v in &mut new.raw.inv_delta_p_1 {
             *v *= delta_inv;
         }
-        for mut v in &mut new.raw.inv_delta_t_1 {
+        for v in &mut new.raw.inv_delta_t_1 {
             *v *= delta_inv;
         }
 
@@ -304,7 +315,7 @@ impl<E: Pairing> Contribution<E> {
 /// A dummy struct to implement the phase trait.
 #[derive(Clone, Debug, Default)]
 struct Phase2<E: Pairing> {
-    _marker: std::marker::PhantomData<E>,
+    _marker: ark_std::marker::PhantomData<E>,
 }
 
 impl<E: Pairing> Phase for Phase2<E> {

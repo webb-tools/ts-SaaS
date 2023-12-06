@@ -3,11 +3,15 @@ use ark_ec::{
     scalar_mul::{variable_base::VariableBaseMSM, ScalarMul},
 };
 use ark_ff::PrimeField;
+use ark_std::vec::Vec;
+
+#[cfg(any(feature = "std", feature = "parallel"))]
 use rand_core::CryptoRngCore;
 
 // # Batched Pairing Checks
 
 /// Sample a random field that's "small" but still big enough for pairing checks.
+#[cfg(any(feature = "std", feature = "parallel"))]
 pub fn rand_small_f<E: Pairing, R: CryptoRngCore>(rng: &mut R) -> E::ScalarField {
     // 128 bits of security
     let mut bytes = [0u8; 16];
@@ -98,6 +102,7 @@ impl<E: Pairing> BatchedPairingChecker12<E> {
     }
 
     #[must_use]
+    #[cfg(any(feature = "std", feature = "parallel"))]
     pub fn check<R: CryptoRngCore>(self, rng: &mut R) -> bool {
         let n = self.vary_l.len();
         let scalars = (0..n)

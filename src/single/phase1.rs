@@ -2,7 +2,11 @@ use anyhow::anyhow;
 use ark_ec::pairing::Pairing;
 use ark_ec::Group;
 use ark_ff::{One, UniformRand, Zero};
-use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Valid, Validate};
+#[allow(unused)]
+use ark_serialize::Valid;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Validate};
+use ark_std::borrow::ToOwned;
+use ark_std::{vec, vec::Vec};
 use rand_core::{CryptoRngCore, OsRng};
 
 use crate::parallel_utils::{flatten_results, transform_parallel, zip_map_parallel};
@@ -152,6 +156,7 @@ impl<E: Pairing> RawCRSElements<E> {
     }
 
     /// This is a replacement for the CanonicalDeserialize trait impl (more or less).
+    #[allow(dead_code)]
     #[cfg(not(feature = "parallel"))]
     pub(crate) fn checked_deserialize_parallel(
         compress: Compress,
@@ -164,6 +169,7 @@ impl<E: Pairing> RawCRSElements<E> {
     }
 
     /// This is a replacement for the CanonicalDeserialize trait impl (more or less).
+    #[allow(dead_code)]
     #[cfg(feature = "parallel")]
     pub(crate) fn checked_deserialize_parallel(
         compress: Compress,
@@ -333,6 +339,7 @@ impl<E: Pairing> RawContribution<E> {
             })
     }
 
+    #[allow(dead_code)]
     pub(crate) fn assume_valid(self) -> Contribution<E> {
         Contribution {
             parent: self.parent,
@@ -537,7 +544,7 @@ impl<E: Pairing> Contribution<E> {
 /// A dummy struct representing this phase, for the sake of implementing the right trait.
 #[derive(Clone, Debug, Default)]
 struct Phase1<E: Pairing> {
-    _marker: std::marker::PhantomData<E>,
+    _marker: ark_std::marker::PhantomData<E>,
 }
 
 impl<E: Pairing> Phase for Phase1<E> {

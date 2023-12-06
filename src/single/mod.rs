@@ -10,21 +10,21 @@ mod phase2;
 
 use ark_ec::pairing::Pairing;
 use ark_ec::{CurveGroup, Group};
-use ark_ff::Zero;
+
 use ark_groth16::data_structures::ProvingKey;
 use ark_groth16::VerifyingKey;
 use ark_poly::EvaluationDomain;
 use ark_poly::Radix2EvaluationDomain;
 use ark_relations::r1cs::ConstraintMatrices;
-
 use ark_serialize::CanonicalDeserialize;
 use ark_serialize::CanonicalSerialize;
+use ark_std::{vec, vec::Vec, Zero};
 
 pub use dlog::Proof as DLogProof;
 
 pub use phase1::CRSElements as Phase1CRSElements;
 pub use phase1::Contribution as Phase1Contribution;
-pub(crate) use phase1::LinkingProof;
+
 pub use phase1::RawCRSElements as Phase1RawCRSElements;
 pub use phase1::RawContribution as Phase1RawContribution;
 
@@ -288,7 +288,7 @@ pub fn combine<E: Pairing>(
 
 #[cfg(test)]
 mod test {
-    use ark_bn254::Bn254;
+
     use ark_ff::One;
     use ark_groth16::{r1cs_to_qap::LibsnarkReduction, Groth16};
     use ark_r1cs_std::{

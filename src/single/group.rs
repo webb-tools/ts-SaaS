@@ -20,7 +20,7 @@ pub(crate) type Hash = [u8; 32];
 #[derive(Clone)]
 pub(crate) struct GroupHasher<E: Pairing> {
     state: StateWrapper,
-    _marker: std::marker::PhantomData<E>,
+    _marker: ark_std::marker::PhantomData<E>,
 }
 
 #[derive(Clone)]
@@ -60,7 +60,7 @@ impl<E: Pairing> GroupHasher<E> {
             .to_state();
         Self {
             state: StateWrapper { state },
-            _marker: std::marker::PhantomData,
+            _marker: ark_std::marker::PhantomData,
         }
     }
 

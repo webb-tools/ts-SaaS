@@ -1,9 +1,9 @@
+use crate::single::group::{GroupHasher, Hash};
 use ark_ec::pairing::Pairing;
 use ark_ff::UniformRand;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use ark_std::vec::Vec;
 use rand_core::CryptoRngCore;
-
-use crate::single::group::{GroupHasher, Hash};
 
 // Note: one choice you could make for these structs is to have them take
 // references to their data, instead of copying them. However, operations like

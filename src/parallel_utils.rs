@@ -1,3 +1,5 @@
+use ark_std::vec::Vec;
+
 pub fn transform<A, B, const N: usize>(data: [A; N], f: impl Fn(A) -> B) -> [B; N] {
     match data.into_iter().map(f).collect::<Vec<B>>().try_into() {
         Ok(x) => x,

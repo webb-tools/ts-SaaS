@@ -1,3 +1,5 @@
+use ark_std::vec::Vec;
+
 /// The number of bytes in a contribution hash.
 pub const CONTRIBUTION_HASH_SIZE: usize = 32;
 
@@ -8,6 +10,7 @@ pub const CONTRIBUTION_HASH_SIZE: usize = 32;
 pub struct ContributionHash(pub [u8; CONTRIBUTION_HASH_SIZE]);
 
 impl ContributionHash {
+    #[allow(dead_code)]
     pub(crate) fn dummy() -> Self {
         Self([0x1; CONTRIBUTION_HASH_SIZE])
     }
@@ -152,6 +155,7 @@ impl<P: Phase> ContributionLog<P> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use ark_std::vec;
 
     fn hash_from_u8(x: u8) -> ContributionHash {
         let mut out = [0u8; CONTRIBUTION_HASH_SIZE];
