@@ -19,8 +19,34 @@ pub(crate) type Hash = [u8; 32];
 /// is when you're hashing a variable number of elements.
 #[derive(Clone)]
 pub(crate) struct GroupHasher<E: Pairing> {
-    state: blake2b_simd::State,
+    state: StateWrapper,
     _marker: std::marker::PhantomData<E>,
+}
+
+#[derive(Clone)]
+pub struct StateWrapper {
+    state: blake2b_simd::State,
+}
+
+impl StateWrapper {
+    pub fn update(&mut self, x: &[u8]) {
+        self.state.update(x);
+    }
+
+    pub fn finalize(self) -> blake2b_simd::Hash {
+        self.state.finalize()
+    }
+}
+
+impl ark_serialize::Write for StateWrapper {
+    fn write(&mut self, buf: &[u8]) -> ark_std::io::Result<usize> {
+        self.update(buf);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> ark_std::io::Result<()> {
+        Ok(())
+    }
 }
 
 impl<E: Pairing> GroupHasher<E> {
@@ -33,7 +59,7 @@ impl<E: Pairing> GroupHasher<E> {
             .personal(personalization)
             .to_state();
         Self {
-            state,
+            state: StateWrapper { state },
             _marker: std::marker::PhantomData,
         }
     }
